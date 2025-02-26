@@ -9,8 +9,8 @@ import CustomButton from "./../components/CustomButton";
 import { useGlobalContext } from "@/context/GlobalProvider";
 
 export default function Index() {
-  const { isLoading, isLogggedin } = useGlobalContext;
-  if (!isLoading && isLogggedin) return <Redirect href="/home" />;
+  const { isLoading, isLoggedin } = useGlobalContext();
+  if (!isLoading && isLoggedin) return <Redirect href="/home" />;
   else {
     return (
       <SafeAreaView className="bg-primary h-full">
@@ -44,8 +44,8 @@ export default function Index() {
             <CustomButton
               title="Continue with Email"
               handlePress={() => {
-                console.log(`Logged in ${isLogggedin}`);
-                if (isLogggedin) {
+                console.log(`Logged in ${isLoggedin}`);
+                if (isLoggedin) {
                   router.push("/home");
                 } else {
                   router.push("/sign-in");
