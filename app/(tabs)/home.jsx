@@ -1,5 +1,5 @@
 import { View, Text, FlatList, Image } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import CustomButton from "../../components/CustomButton";
 import { Redirect, router } from "expo-router";
@@ -9,23 +9,29 @@ import SearchInput from "../../components/SearchInput";
 import Trending from "../../components/Trending";
 import EmptyState from "../../components/EmptyState";
 import { RefreshControl } from "react-native-gesture-handler";
+import { getAllPosts } from "../../lib/appwrite";
+import useAppwrite from "../../lib/useAppwrite";
+import VideoCard from "../../components/VideoCard";
 
 const Home = () => {
+  const { data: posts, refetch } = useAppwrite(getAllPosts);
   const [refreshing, setRefreshing] = useState(false);
+
   const onRefresh = async () => {
     setRefreshing(true);
     //recall videos
+    awaitrefetch();
     setRefreshing(false);
   };
-  const { isLoading, isLoggedIn, user } = useGlobalContext();
+  // const { isLoggedIn, user } = useGlobalContext();
   return (
     <SafeAreaView className="bg-primary h-full">
       <FlatList
         // data={[{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]}
-        data={[]}
-        keyExtractor={(item) => item.id}
+        data={posts}
+        keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
-          <Text className="text-3xl text-white">{item.id}</Text>
+          <Text className="text-3xl text-white">{item.title}</Text>
         )}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
