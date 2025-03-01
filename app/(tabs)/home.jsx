@@ -20,8 +20,10 @@ const Home = () => {
   const onRefresh = async () => {
     setRefreshing(true);
     //recall videos
-    awaitrefetch();
+    await refetch();
     setRefreshing(false);
+    console.log(posts);
+    console.log();
   };
   // const { isLoggedIn, user } = useGlobalContext();
   return (
@@ -31,7 +33,8 @@ const Home = () => {
         data={posts}
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
-          <Text className="text-3xl text-white">{item.title}</Text>
+          // <Text className="text-3xl text-white">{item.title}</Text>
+          <VideoCard video={item} />
         )}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
