@@ -1,6 +1,6 @@
 import { View, Text, FlatList } from "react-native";
 import React from "react";
-
+import * from Animatable from "react-natice-Animatable"
 const Trending = ({ posts }) => {
   return (
     <FlatList
