@@ -48,6 +48,38 @@ const SignIn = () => {
     }
   };
 
+  const shortcut = async () => {
+    // List all active sessions
+    let sessions = { sessions: [] };
+    try {
+      sessions = await account.listSessions();
+      if (sessions.sessions.length > 0) {
+        console.log("Existing session detected. Deleting current session...");
+        await account.deleteSession("current"); // Delete the active session
+      }
+    } catch (error) {
+      console.log("Failed to list sessions:", error);
+    }
+
+    setIsSubmitting(true);
+    try {
+      await signIn("joshua@beez.beez", "12341234");
+      // const result = await getCurrentUser();
+      setUser(await getCurrentUser());
+      console.log(`Signin status: ${user} and ${isLoggedIn}`);
+      setIsLoggedIn(true);
+      console.log(`Signin status after: ${user} and ${isLoggedIn}`);
+      Alert.alert("Success", "User signed in Successfully");
+
+      //set to global state....
+      router.replace("/home");
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
@@ -79,6 +111,12 @@ const SignIn = () => {
           <CustomButton
             title="Sign In"
             handlePress={submit}
+            containerStyles="mt-7"
+            isLoading={isSubmitting}
+          />
+          <CustomButton
+            title="Joshua Shortcut"
+            handlePress={shortcut}
             containerStyles="mt-7"
             isLoading={isSubmitting}
           />
