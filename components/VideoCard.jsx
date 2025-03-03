@@ -1,6 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { icons } from "../constants";
+import { Video, ResizeMode } from "expo-av";
 
 const VideoCard = ({
   video: {
@@ -41,7 +42,18 @@ const VideoCard = ({
       </View>
 
       {play ? (
-        <Text className="text-white">Playing</Text>
+        <Video
+          source={require("./../videos/39010-420224640_tiny.mp4")} // Use one of the above sample MP4 links
+          // style={{ width: 300, height: 200 }}
+          resizeMode={ResizeMode.CONTAIN}
+          useNativeControls
+          shouldPlay={play}
+          onPlaybackStatusUpdate={(status) => {
+            if (status.didJustFinish) {
+              setPlay(false);
+            }
+          }}
+        />
       ) : (
         <TouchableOpacity
           activeOpacity={0.7}
