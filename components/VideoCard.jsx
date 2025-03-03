@@ -44,7 +44,7 @@ const VideoCard = ({
       {play ? (
         <Video
           source={require("./../videos/39010-420224640_tiny.mp4")} // Use one of the above sample MP4 links
-          // style={{ width: 300, height: 200 }}
+          style={{ width: 208, height: 288, borderRadius: 35 }}
           resizeMode={ResizeMode.CONTAIN}
           useNativeControls
           shouldPlay={play}
