@@ -1,8 +1,5 @@
 import { View, Text, FlatList, Image } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useGlobalContext } from "../../context/GlobalProvider";
-import CustomButton from "../../components/CustomButton";
-import { Redirect, router } from "expo-router";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import SearchInput from "../../components/SearchInput";

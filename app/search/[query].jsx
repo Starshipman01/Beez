@@ -1,15 +1,10 @@
-import { View, Text, FlatList, Image } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useGlobalContext } from "../../context/GlobalProvider";
-import CustomButton from "../../components/CustomButton";
-import { Redirect, router, useLocalSearchParams } from "expo-router";
+import { View, Text, FlatList } from "react-native";
+import React, { useEffect } from "react";
+import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { images } from "../../constants";
 import SearchInput from "../../components/SearchInput";
-import Trending from "../../components/Trending";
 import EmptyState from "../../components/EmptyState";
-import { RefreshControl } from "react-native-gesture-handler";
-import { getAllPosts, getLatestPosts, searchPosts } from "../../lib/appwrite";
+import { searchPosts } from "../../lib/appwrite";
 import useAppwrite from "../../lib/useAppwrite";
 import VideoCard from "../../components/VideoCard";
 
@@ -22,7 +17,7 @@ const Search = () => {
   }, [query]);
 
   // const onRefresh = async () => {
-  //   setRefreshing(true);
+  //   setRefreshring(true);
   //   //recall videos
   //   await refetch();
   //   setRefreshing(false);
