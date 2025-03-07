@@ -1,19 +1,28 @@
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
 import React, { useEffect } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchInput from "../../components/SearchInput";
 import EmptyState from "../../components/EmptyState";
-import { getUserPosts, searchPosts } from "../../lib/appwrite";
+import { getUserPosts, searchPosts, signOut } from "../../lib/appwrite";
 import useAppwrite from "../../lib/useAppwrite";
 import VideoCard from "../../components/VideoCard";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import { icons } from "../../constants";
+import InfoBox from "../../components/InfoBox";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
   console.log("TESTFUCK:");
   console.log(user.accountId);
   const { data: posts } = useAppwrite(() => getUserPosts(user.accountId));
+
+  const logout = async () => {
+    await signOut();
+    setUser(null);
+    setIsLoggedIn(false);
+    router.replace("/sign-in");
+  };
 
   // const onRefresh = async () => {
   //   setRefreshring(true);
@@ -35,17 +44,43 @@ const Profile = () => {
           <VideoCard video={item} />
         )}
         ListHeaderComponent={() => (
-          <View className="my-6 px-4">
-            <Text className="font-pmedium text-sm text-gray-100">
-              Search Results:
-            </Text>
+          <View className="w-full justify-center items-center mt-6 mb-12 px-4">
+            <TouchableOpacity
+              className="w-full items-end mb-10"
+              onPress={logout}
+            >
+              <Image
+                source={icons.logout}
+                resizemode="contain"
+                className="w-6 h-6"
+              />
+            </TouchableOpacity>
+            <View className="w-16 h-16 border border-secondary rounded-lg justify-center items-center">
+              <Image
+                source={{ uri: user?.avatar }}
+                className="w-[90%] h-[90%] rounded-lg"
+                resizemode="cover"
+              />
+            </View>
+            <InfoBox
+              title={user?.username}
+              containerStyles="mg-5"
+              titleStyles="text-lg"
+            />
 
-            <Text className="text-2xl font-psemibold text-white">TESTING</Text>
-            <View className="mt-6 mb-8">
-              {/* <SearchInput
-                initialQuery={query}
-                placeholder="Search for a Video Topic"
-              /> */}
+            <View className="mt-5 flex-row">
+              <InfoBox
+                title={posts.length || 0}
+                subtitle="Posts"
+                containerStyles="mr-10"
+                titleStyles="text-xl"
+              />
+
+              <InfoBox
+                title="Followers"
+                subtitle="Followers"
+                titleStyles="text-xl"
+              />
             </View>
           </View>
         )}
