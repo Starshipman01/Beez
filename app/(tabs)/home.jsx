@@ -9,6 +9,7 @@ import { RefreshControl } from "react-native-gesture-handler";
 import { getAllPosts, getLatestPosts } from "../../lib/appwrite";
 import useAppwrite from "../../lib/useAppwrite";
 import VideoCard from "../../components/VideoCard";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Home = () => {
   const { data: posts, refetch } = useAppwrite(getAllPosts);
@@ -23,7 +24,8 @@ const Home = () => {
     console.log(posts);
     console.log();
   };
-  // const { isLoggedIn, user } = useGlobalContext();
+  const { isLoggedIn, user } = useGlobalContext();
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <FlatList
@@ -43,7 +45,7 @@ const Home = () => {
                 </Text>
 
                 <Text className="text-2xl font-psemibold text-white">
-                  Joshua
+                  {user.username}
                 </Text>
               </View>
 
