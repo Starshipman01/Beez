@@ -16,15 +16,15 @@ const SignIn = () => {
   const submit = async () => {
     // List all active sessions
     let sessions = { sessions: [] };
-    // try {
-    //   sessions = await account.listSessions();
-    //   if (sessions.sessions.length > 0) {
-    //     console.log("Existing session detected. Deleting current session...");
-    //     await account.deleteSession("current"); // Delete the active session
-    //   }
-    // } catch (error) {
-    //   console.log("Failed to list sessions:", error);
-    // }
+    try {
+      sessions = await account.listSessions();
+      if (sessions.sessions.length > 0) {
+        console.log("Existing session detected. Deleting current session...");
+        await account.deleteSession("current"); // Delete the active session
+      }
+    } catch (error) {
+      console.log("Failed to list sessions:", error);
+    }
 
     if (form.password === "" || form.email === "") {
       Alert.alert("Error", "Please fill in all the fields");
@@ -51,15 +51,15 @@ const SignIn = () => {
   const shortcut = async () => {
     // List all active sessions
     let sessions = { sessions: [] };
-    // try {
-    //   sessions = await account.listSessions();
-    //   if (sessions.sessions.length > 0) {
-    //     console.log("Existing session detected. Deleting current session...");
-    //     await account.deleteSession("current"); // Delete the active session
-    //   }
-    // } catch (error) {
-    //   console.log("Failed to list sessions:", error);
-    // }
+    try {
+      sessions = await account.listSessions();
+      if (sessions.sessions.length > 0) {
+        console.log("Existing session detected. Deleting current session...");
+        await account.deleteSession("current"); // Delete the active session
+      }
+    } catch (error) {
+      console.log("Failed to list sessions:", error);
+    }
 
     setIsSubmitting(true);
     try {
