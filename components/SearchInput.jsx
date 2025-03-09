@@ -16,10 +16,11 @@ const SearchInput = ({
   placeholder,
   handleChangeText,
   otherStyles,
+  initialQuery,
   ...props
 }) => {
   const pathname = usePathname();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery || "");
   return (
     <View className="border-2 border-black-500 w-full h-16 px-4 bg-black-100 rounded-2xl focus:border-secondary items-center flex-row space-x-4">
       <TextInput

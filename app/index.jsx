@@ -44,7 +44,7 @@ export default function Index() {
             <CustomButton
               title="Continue with Email"
               handlePress={() => {
-                console.log(`Logged in ${isLoggedin}`);
+                // console.log(`Logged in ${isLoggedin}`);
                 if (isLoggedin) {
                   router.push("/home");
                 } else {

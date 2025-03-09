@@ -21,8 +21,6 @@ const Home = () => {
     //recall videos
     await refetch();
     setRefreshing(false);
-    console.log(posts);
-    console.log();
   };
   const { isLoggedIn, user } = useGlobalContext();
 

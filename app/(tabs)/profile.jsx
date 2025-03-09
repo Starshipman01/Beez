@@ -13,8 +13,6 @@ import InfoBox from "../../components/InfoBox";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
-  console.log("TESTFUCK:");
-  console.log(user.accountId);
   const { data: posts } = useAppwrite(() => getUserPosts(user.accountId));
 
   const logout = async () => {
@@ -29,8 +27,6 @@ const Profile = () => {
   //   //recall videos
   //   await refetch();
   //   setRefreshing(false);
-  //   console.log(posts);
-  //   console.log();
   // };
   // const { isLoggedIn, user } = useGlobalContext();
   return (

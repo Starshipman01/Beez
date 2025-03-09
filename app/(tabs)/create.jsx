@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
@@ -7,8 +7,12 @@ import { ResizeMode, Video } from "expo-av";
 import { icons } from "../../constants";
 import CustomButton from "../../components/CustomButton";
 import * as DocumentPicker from "expo-document-picker";
+import { router } from "expo-router";
+import { createVideo } from "../../lib/appwrite";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Create = () => {
+  const { user } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
     title: "",
@@ -39,7 +43,7 @@ const Create = () => {
       });
     }
   };
-  const submit = () => {
+  const submit = async () => {
     if (!form.prompt || !form.title || !form.thumbnail || !form.video) {
       return Alert.alert("Please fill in all the fields");
     }
@@ -47,9 +51,20 @@ const Create = () => {
     setUploading(true);
 
     try {
+      console.log("Testing in create.jsx");
+      console.log("Before");
+      await createVideo({
+        ...form,
+        userId: user.$id,
+      });
+      console.log("After");
+      Alert.alert("Success", "Post Uploaded Successfully");
+      router.push("/home");
     } catch (error) {
+      Alert.alert("Error", error.message);
     } finally {
       setForm({ title: "", video: null, thumbnail: null, prompt: "" });
+      setUploading(false);
     }
   };
   return (

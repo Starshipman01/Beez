@@ -23,7 +23,7 @@ const zoomOut = {
 };
 const TrendingItem = ({ activeItem, item }) => {
   const [play, setPlay] = useState(false);
-  console.log(`VIDEO URL:${item.video}`);
+  // console.log(`VIDEO URL:${item.video}`);
   return (
     <Animatable.View
       className="mr-5"
