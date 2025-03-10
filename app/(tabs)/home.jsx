@@ -18,7 +18,8 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   const navToLanding = async () => {
-    router.replace("/");
+    console.log("In home:", isLoggedIn, user);
+    router.push("/");
     // router.navigate("");
   };
   const onRefresh = async () => {
@@ -28,6 +29,7 @@ const Home = () => {
     setRefreshing(false);
   };
   const { isLoggedIn, user } = useGlobalContext();
+  console.log("In Home.JSX: ", isLoggedIn, user);
 
   return (
     <SafeAreaView className="bg-primary h-full">

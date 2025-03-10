@@ -6,11 +6,24 @@ import "react-native-url-polyfill/auto";
 
 import { images } from "./../constants";
 import CustomButton from "./../components/CustomButton";
+import { useEffect } from "react";
 import { useGlobalContext } from "@/context/GlobalProvider";
 
 export default function Index() {
-  const { isLoading, isLoggedin } = useGlobalContext();
+  const { user, isLoading, isLoggedin } = useGlobalContext();
+  console.log("Index: ", user);
+  console.log("Isloggedin Index.jsx: ", isLoggedin);
 
+  // ✅ Check for isLoggedin state constantly and redirect when needed
+  // useEffect(() => {
+  //   console.log("Loading:", isLoading, "Logged In:", isLoggedin);
+  //   if (!isLoading && isLoggedin) {
+  //     console.log("INDEX FUCK");
+  //     router.replace("/home");
+  //   }
+  // }, [isLoading, isLoggedin]); // 👈 Runs when these states change
+
+  console.log("loading: ", isLoading);
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-primary">
@@ -19,6 +32,7 @@ export default function Index() {
     );
   }
 
+  console.log("login", isLoggedin);
   if (isLoggedin) {
     return <Redirect href="/home" />;
   }
@@ -56,7 +70,7 @@ export default function Index() {
             <CustomButton
               title="Continue "
               handlePress={() => {
-                // console.log(`Logged in ${isLoggedin}`);
+                console.log(`Logged in at handlepress ${isLoggedin}`);
                 if (isLoggedin) {
                   router.push("/home");
                 } else {

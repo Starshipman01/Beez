@@ -33,13 +33,14 @@ const SignIn = () => {
     try {
       await signIn(form.email, form.password);
       // const result = await getCurrentUser();
-      setUser(await getCurrentUser());
+      setUser(await getCurrentUser()); //set to global state....
       console.log(`Signin status: ${user} and ${isLoggedIn}`);
-      setIsLoggedIn(true);
+      setIsLoggedIn(true); //set to global state....
       console.log(`Signin status after: ${user} and ${isLoggedIn}`);
       Alert.alert("Success", "User signed in Successfully");
 
       //set to global state....
+
       router.replace("/home");
     } catch (error) {
       Alert.alert("Error", error.message);
@@ -65,9 +66,10 @@ const SignIn = () => {
     try {
       await signIn("joshua@beez.beez", "12341234");
       // const result = await getCurrentUser();
-      setUser(await getCurrentUser());
+      setUser(await getCurrentUser()); //set to global state....
+
       console.log(`Signin status: ${user} and ${isLoggedIn}`);
-      setIsLoggedIn(true);
+      setIsLoggedIn(true); //set to global state....
       console.log(`Signin status after: ${user} and ${isLoggedIn}`);
       Alert.alert("Success", "User signed in Successfully");
 
