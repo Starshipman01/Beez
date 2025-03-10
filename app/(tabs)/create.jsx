@@ -53,7 +53,7 @@ const Create = () => {
     }
 
     setUploading(true);
-    console.log("USER:", user);
+    console.log("USER2:", user);
 
     try {
       await createVideo({
