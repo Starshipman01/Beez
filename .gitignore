@@ -38,4 +38,5 @@ yarn-error.*
 app-example
 
 #API ENDPOINTS
-lib/appwrite.js
+
+lib/appwriteKeys.js

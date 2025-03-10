@@ -10,7 +10,19 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 
 export default function Index() {
   const { isLoading, isLoggedin } = useGlobalContext();
-  if (!isLoading && isLoggedin) return <Redirect href="/home" />;
+
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-primary">
+        <Text className="text-white">Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (isLoggedin) {
+    return <Redirect href="/home" />;
+  }
+  // if (!isLoading && isLoggedin) return <Redirect href="/home" />;
   else {
     return (
       <SafeAreaView className="bg-primary h-full">
@@ -42,7 +54,7 @@ export default function Index() {
               limitless exploration with Aora
             </Text>
             <CustomButton
-              title="Continue with Email"
+              title="Continue "
               handlePress={() => {
                 // console.log(`Logged in ${isLoggedin}`);
                 if (isLoggedin) {

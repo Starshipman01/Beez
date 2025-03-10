@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image } from "react-native";
+import { View, Text, FlatList, Image, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
@@ -10,12 +10,17 @@ import { getAllPosts, getLatestPosts } from "../../lib/appwrite";
 import useAppwrite from "../../lib/useAppwrite";
 import VideoCard from "../../components/VideoCard";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import { router } from "expo-router";
 
 const Home = () => {
   const { data: posts, refetch } = useAppwrite(getAllPosts);
   const { data: latestPosts } = useAppwrite(getLatestPosts);
   const [refreshing, setRefreshing] = useState(false);
 
+  const navToLanding = async () => {
+    router.replace("/");
+    // router.navigate("");
+  };
   const onRefresh = async () => {
     setRefreshing(true);
     //recall videos
@@ -46,14 +51,15 @@ const Home = () => {
                   {user.username}
                 </Text>
               </View>
-
-              <View className="mt-1.5">
-                <Image
-                  source={images.logoSmall}
-                  className="w-9 h-10"
-                  resizeMode="contain"
-                />
-              </View>
+              <TouchableOpacity className="mt-1.5" onPress={navToLanding}>
+                <View className="mt-1.5">
+                  <Image
+                    source={images.logoSmall}
+                    className="w-9 h-10"
+                    resizeMode="contain"
+                  />
+                </View>
+              </TouchableOpacity>
             </View>
             <SearchInput placeholder="Search for a Video Topic" />
             <View className="w-full flex-1 pt-5 pb-8 ">
