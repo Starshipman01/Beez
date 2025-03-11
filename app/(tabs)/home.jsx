@@ -11,26 +11,25 @@ import useAppwrite from "../../lib/useAppwrite";
 import VideoCard from "../../components/VideoCard";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { router } from "expo-router";
+import OrderCard from "../../components/OrderCard";
 
 const Home = () => {
-  const { data: posts, refetch } = useAppwrite(getAllPosts);
-  const { data: latestPosts, refetchLatest } = useAppwrite(getLatestPosts);
+  const { data: posts, refetch: refetchPosts } = useAppwrite(getAllPosts);
+  // const { data: latestPosts, refetch: refetchLatest } = useAppwrite(getLatestPosts);
   const [refreshing, setRefreshing] = useState(false);
   const { isLoggedIn, user } = useGlobalContext();
 
   const navToLanding = async () => {
-    console.log("In home:", isLoggedIn, user);
-    router.navigate("/");
+    router.push("/");
     // router.navigate("");
   };
   const onRefresh = async () => {
     setRefreshing(true);
     //recall videos
-    await refetch();
-    await refetchLatest();
+    await refetchPosts();
+    // await refetchLatest();
     setRefreshing(false);
   };
-  console.log("Posts within Home: ", posts);
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -40,7 +39,8 @@ const Home = () => {
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
           // <Text className="text-3xl text-white">{item.title}</Text>
-          <VideoCard video={item} />
+          // <VideoCard video={item} />
+          <OrderCard order={item} />
         )}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
@@ -65,12 +65,12 @@ const Home = () => {
               </TouchableOpacity>
             </View>
             <SearchInput placeholder="Search for a Video Topic" />
-            <View className="w-full flex-1 pt-5 pb-8 ">
+            {/* <View className="w-full flex-1 pt-5 pb-8 ">
               <Text className="text-gray-100 text-lg font-pregular mb-3">
                 Latest Videos
               </Text>
               <Trending posts={latestPosts ?? []} />
-            </View>
+            </View> */}
           </View>
         )}
         ListEmptyComponent={() => (

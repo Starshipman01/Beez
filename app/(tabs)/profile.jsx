@@ -30,7 +30,8 @@ const Profile = () => {
     await signOut();
     setUser(null);
     setIsLoggedIn(false);
-    router.replace("/sign-in");
+    setIsLoggedIn(false);
+    router.replace("/");
   };
 
   // const onRefresh = async () => {
