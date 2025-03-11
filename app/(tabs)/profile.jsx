@@ -14,9 +14,7 @@ import { RefreshControl } from "react-native-gesture-handler";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
-  const { data: posts, refetch } = useAppwrite(() =>
-    getUserPosts(user.accountId)
-  );
+  const { data: posts, refetch } = useAppwrite(() => getUserPosts(user.$id));
   const [refreshing, setRefreshing] = useState(false);
   console.log("User in profile: ", user.accountId);
 

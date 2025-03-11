@@ -48,17 +48,19 @@ const Create = () => {
     // }
   };
   const submit = async () => {
+    console.log("Submit process started");
     if (!form.prompt || !form.title || !form.thumbnail || !form.video) {
       return Alert.alert("Please fill in all the fields");
     }
-
+    console.log("TEST");
+    console.log("USER1:", user);
     setUploading(true);
     console.log("USER2:", user);
 
     try {
       await createVideo({
         ...form,
-        userId: user.accountId,
+        userId: user.$id,
         user: user,
       });
       Alert.alert("Success", "Post Uploaded Successfully");
