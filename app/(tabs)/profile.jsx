@@ -2,7 +2,6 @@ import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import SearchInput from "../../components/SearchInput";
 import EmptyState from "../../components/EmptyState";
 import { getUserPosts, searchPosts, signOut } from "../../lib/appwrite";
 import useAppwrite from "../../lib/useAppwrite";
