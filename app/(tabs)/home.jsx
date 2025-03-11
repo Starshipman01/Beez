@@ -14,22 +14,23 @@ import { router } from "expo-router";
 
 const Home = () => {
   const { data: posts, refetch } = useAppwrite(getAllPosts);
-  const { data: latestPosts } = useAppwrite(getLatestPosts);
+  const { data: latestPosts, refetchLatest } = useAppwrite(getLatestPosts);
   const [refreshing, setRefreshing] = useState(false);
+  const { isLoggedIn, user } = useGlobalContext();
 
   const navToLanding = async () => {
     console.log("In home:", isLoggedIn, user);
-    router.push("/");
+    router.navigate("/");
     // router.navigate("");
   };
   const onRefresh = async () => {
     setRefreshing(true);
     //recall videos
     await refetch();
+    await refetchLatest();
     setRefreshing(false);
   };
-  const { isLoggedIn, user } = useGlobalContext();
-  console.log("In Home.JSX: ", isLoggedIn, user);
+  console.log("Posts within Home: ", posts);
 
   return (
     <SafeAreaView className="bg-primary h-full">

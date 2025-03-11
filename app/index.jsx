@@ -10,18 +10,16 @@ import { useEffect } from "react";
 import { useGlobalContext } from "@/context/GlobalProvider";
 
 export default function Index() {
-  const { user, isLoading, isLoggedin } = useGlobalContext();
-  console.log("Index: ", user);
-  console.log("Isloggedin Index.jsx: ", isLoggedin);
+  const { user, isLoading, isLoggedIn } = useGlobalContext();
 
-  // ✅ Check for isLoggedin state constantly and redirect when needed
+  // ✅ Check for isLoggedIn state constantly and redirect when needed
   // useEffect(() => {
-  //   console.log("Loading:", isLoading, "Logged In:", isLoggedin);
-  //   if (!isLoading && isLoggedin) {
+  //   console.log("Loading:", isLoading, "Logged In:", isLoggedIn);
+  //   if (!isLoading && isLoggedIn) {
   //     console.log("INDEX FUCK");
   //     router.replace("/home");
   //   }
-  // }, [isLoading, isLoggedin]); // 👈 Runs when these states change
+  // }, [isLoading, isLoggedIn]); // 👈 Runs when these states change
 
   console.log("loading: ", isLoading);
   if (isLoading) {
@@ -32,11 +30,11 @@ export default function Index() {
     );
   }
 
-  console.log("login", isLoggedin);
-  if (isLoggedin) {
+  console.log("login", isLoggedIn);
+  if (isLoggedIn) {
     return <Redirect href="/home" />;
   }
-  // if (!isLoading && isLoggedin) return <Redirect href="/home" />;
+  // if (!isLoading && isLoggedIn) return <Redirect href="/home" />;
   else {
     return (
       <SafeAreaView className="bg-primary h-full">
@@ -70,8 +68,8 @@ export default function Index() {
             <CustomButton
               title="Continue "
               handlePress={() => {
-                console.log(`Logged in at handlepress ${isLoggedin}`);
-                if (isLoggedin) {
+                console.log(`Logged in at handlepress ${isLoggedIn}`);
+                if (isLoggedIn) {
                   router.push("/home");
                 } else {
                   router.push("/sign-in");

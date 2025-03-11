@@ -33,7 +33,7 @@ const TrendingItem = ({ activeItem, item }) => {
       {play ? (
         // <View className="w-52 h-72 rounded-[35px] mt-3 bg-white/10">
         <Video
-          source={require("./../videos/39010-420224640_tiny.mp4")}
+          source={{ uri: item.video }}
           // className="w-52 h-72 rounded-[35px] mt-3 bg-white/10"
           style={{ width: 208, height: 288, borderRadius: 35 }}
           resizeMode={ResizeMode.CONTAIN}

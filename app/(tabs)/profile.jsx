@@ -1,5 +1,5 @@
 import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchInput from "../../components/SearchInput";
@@ -10,10 +10,24 @@ import VideoCard from "../../components/VideoCard";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { icons } from "../../constants";
 import InfoBox from "../../components/InfoBox";
+import { RefreshControl } from "react-native-gesture-handler";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
-  const { data: posts } = useAppwrite(() => getUserPosts(user.accountId));
+  const { data: posts, refetch } = useAppwrite(() =>
+    getUserPosts(user.accountId)
+  );
+  const [refreshing, setRefreshing] = useState(false);
+  console.log("User in profile: ", user.accountId);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    //recall videos
+    console.log("BEFORE PROFILE: ", posts);
+    await refetch();
+    console.log("After PROFILE: ", posts);
+    setRefreshing(false);
+  };
 
   const logout = async () => {
     await signOut();
@@ -86,6 +100,9 @@ const Profile = () => {
             subtitle="No videos found for this search query"
           />
         )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </SafeAreaView>
   );
