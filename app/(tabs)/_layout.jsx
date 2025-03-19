@@ -11,14 +11,14 @@ const TabIcon = ({ icon, color, name, focused }) => {
         source={icon}
         resizeMode="contain"
         tintColor={color}
-        className="w-6 h-6"
-        // style={{ width: 24, height: 24, tintColor: color }} // Ensure icon fits
+        className="w-6 h-6 bottom-1"
+        style={{ width: 24, height: 24, tintColor: color }} // Ensure icon fits
       />
       <Text
         className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
         style={{ color: color }}
-        // numberOfLines={1}
-        // adjustsFontSizeToFit
+        numberOfLines={1}
+        adjustsFontSizeToFit
       >
         {name}
       </Text>
@@ -49,6 +49,7 @@ const TabsLayout = () => {
           options={{
             title: "Home",
             headerShown: false,
+            unmountOnBlur: true,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.home}
@@ -83,7 +84,22 @@ const TabsLayout = () => {
               <TabIcon
                 icon={icons.plus}
                 color={color}
-                name="Create"
+                name="Create" // Text on screen
+                focused={focused}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="createDelivery"
+          options={{
+            title: "CreateDelivery", // Changed to CreateDelivery from Create
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.upload}
+                color={color}
+                name="Start Order" // Text on screen
                 focused={focused}
               />
             ),

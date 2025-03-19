@@ -27,9 +27,9 @@ const Profile = () => {
   };
 
   const logout = async () => {
+    console.log("Signout Process HERE");
     await signOut();
     setUser(null);
-    setIsLoggedIn(false);
     setIsLoggedIn(false);
     router.replace("/");
   };

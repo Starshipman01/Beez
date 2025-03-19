@@ -10,16 +10,8 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { createVideo } from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
-import { useLocalSearchParams } from "expo-router";
-//DROPDOWN
-import { Menu, Button } from "react-native-paper";
 
-const deliveryLanding = () => {
-  // DROPDOWN PICKER
-  const [visible, setVisible] = useState(false);
-  // DROPDOWN PICKSER
-
-  const { orderId } = useLocalSearchParams();
+const CreateDelivery = () => {
   const { user } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
@@ -28,41 +20,42 @@ const deliveryLanding = () => {
     thumbnail: null,
     prompt: "",
   });
-  console.log("deliverylanding params: ", orderId);
 
-  // const openPicker = async (selectType) => {
-  //   let result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes:
-  //       selectType === "image"
-  //         ? ImagePicker.MediaTypeOptions.Images
-  //         : ImagePicker.MediaTypeOptions.Videos,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //   });
-  //   if (!result.canceled) {
-  //     if (selectType === "image") {
-  //       setForm({ ...form, thumbnail: result.assets[0] });
-  //     }
-  //     if (selectType === "video") {
-  //       setForm({ ...form, video: result.assets[0] });
-  //     }
-  //   }
-  // else {
-  //   setTimeout(() => {
-  //     setTimeout(() => {
-  //       Alert.alert("Document picked", JSON.stringify(result, null, 2));
-  //     }, 100);
-  //   });
-  // }
-  // };
+  const openPicker = async (selectType) => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes:
+        selectType === "image"
+          ? ImagePicker.MediaTypeOptions.Images
+          : ImagePicker.MediaTypeOptions.Videos,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      if (selectType === "image") {
+        setForm({ ...form, thumbnail: result.assets[0] });
+      }
+      if (selectType === "video") {
+        setForm({ ...form, video: result.assets[0] });
+      }
+    }
+    // else {
+    //   setTimeout(() => {
+    //     setTimeout(() => {
+    //       Alert.alert("Document picked", JSON.stringify(result, null, 2));
+    //     }, 100);
+    //   });
+    // }
+  };
   const submit = async () => {
     console.log("Submit process started");
     if (!form.prompt || !form.title || !form.thumbnail || !form.video) {
       return Alert.alert("Please fill in all the fields");
     }
-
+    console.log("TEST");
+    console.log("USER1:", user);
     setUploading(true);
+    console.log("USER2:", user);
 
     try {
       await createVideo({
@@ -73,6 +66,7 @@ const deliveryLanding = () => {
       Alert.alert("Success", "Post Uploaded Successfully");
       router.push("/home");
     } catch (error) {
+      console.log("Error in Submit", error);
       Alert.alert("Error", error.message);
     } finally {
       setForm({ title: "", video: null, thumbnail: null, prompt: "" });
@@ -83,7 +77,7 @@ const deliveryLanding = () => {
     <SafeAreaView className=" bg-primary h-full">
       <ScrollView className="px-4 my-6">
         <Text className="text-2xl text-white font-psemibold">
-          Upload Delivery Request for ID[{orderId}]
+          Upload Video PENIS
         </Text>
         <FormField
           title="video title"
@@ -92,9 +86,9 @@ const deliveryLanding = () => {
           handleChangeText={(e) => setForm({ ...form, title: e })}
           otherStyles="mt-10"
         />
-        {/* <View className="mt-7 space-y-2">
+        <View className="mt-7 space-y-2">
           <Text className="text-base text-gray-100 font-pmedium">
-            Upload Video
+            Upload Delivery Session
           </Text>
           <TouchableOpacity onPress={() => openPicker("video")}>
             {form.video ? (
@@ -117,8 +111,8 @@ const deliveryLanding = () => {
               </View>
             )}
           </TouchableOpacity>
-        </View> */}
-        {/* <View className="mt-7 space-y-2">
+        </View>
+        <View className="mt-7 space-y-2">
           <Text className="text-base text-gray-100 font-pmedium">
             Upload Thumbnail
           </Text>
@@ -142,7 +136,7 @@ const deliveryLanding = () => {
               </View>
             )}
           </TouchableOpacity>
-        </View> */}
+        </View>
         <FormField
           title="AI Prompt"
           value={form.prompt}
@@ -150,36 +144,6 @@ const deliveryLanding = () => {
           handleChangeText={(e) => setForm({ ...form, prompt: e })}
           otherStyles="mt-7"
         />
-
-        {/* DROPDOWN THINGY */}
-        <View className="w-full px-4 py-2">
-          <Text className="text-lg font-semibold text-gray-100 mb-2">
-            Select an option:
-          </Text>
-          <Menu
-            visible={visible}
-            onDismiss={() => setVisible(false)}
-            anchor={
-              <Button
-                className="border-2 border-secondary bg-black-100 rounded-lg"
-                onPress={() => setVisible(true)}
-              >
-                Open Menu
-              </Button>
-            }
-          >
-            <Menu.Item
-              onPress={() => console.log("Option 1")}
-              title="Option 1"
-            />
-            <Menu.Item
-              onPress={() => console.log("Option 2")}
-              title="Option 2"
-            />
-          </Menu>
-          <Text className="text-white">TEST</Text>
-        </View>
-        {/* DROPDOWN THINGY */}
 
         <CustomButton
           title="Submit & Publish"
@@ -191,4 +155,4 @@ const deliveryLanding = () => {
     </SafeAreaView>
   );
 };
-export default deliveryLanding;
+export default CreateDelivery;

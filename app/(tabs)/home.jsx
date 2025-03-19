@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import SearchInput from "../../components/SearchInput";
-import Trending from "../../components/Trending";
 import EmptyState from "../../components/EmptyState";
 import { RefreshControl } from "react-native-gesture-handler";
 import { getAllPosts, getLatestPosts } from "../../lib/appwrite";
@@ -20,7 +19,7 @@ const Home = () => {
   const { isLoggedIn, user } = useGlobalContext();
 
   const navToLanding = async () => {
-    router.push("/");
+    router.replace("/");
     // router.navigate("");
   };
   const onRefresh = async () => {

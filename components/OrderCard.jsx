@@ -13,17 +13,16 @@ const OrderCard = ({
     cutOffTime = "5:00PM",
     deliveryTime = "6:00PM",
     orderCap = 5,
+    orderId = 1,
   },
 }) => {
   const [play, setPlay] = useState(false);
 
   const navToPlaceOrder = async () => {
-    console.log("Order placing");
     router.push({
-      pathname: "/deliveryLanding", // Target screen
-      //   query: { order }, // Props passed PROPS DO LATER
+      pathname: `/deliveryLanding?orderId=${orderId}`,
+      // Passing the order information over
     });
-    console.log("TEST");
   };
 
   return (

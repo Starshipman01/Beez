@@ -71,7 +71,7 @@ const SignIn = () => {
       console.log(`Signin status: ${user} and ${isLoggedIn}`);
       setIsLoggedIn(true); //set to global state....
       console.log(`Signin status after: ${user} and ${isLoggedIn}`);
-      Alert.alert("Success", "User signed in Successfully");
+      // Alert.alert("Success", "User signed in Successfully");
 
       //set to global state....
       router.replace("/home");
