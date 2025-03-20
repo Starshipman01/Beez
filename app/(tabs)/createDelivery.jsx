@@ -10,8 +10,27 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { createVideo } from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Button } from "react-native-paper";
 
 const CreateDelivery = () => {
+  //Date Picker
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
+  const showDatePicker = () => {
+    setDatePickerVisible(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisible(false);
+  };
+
+  const handleConfirm = (date) => {
+    setSelectedDate(date);
+    hideDatePicker();
+  };
+  //Date Picker
+
   const { user } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
@@ -19,34 +38,38 @@ const CreateDelivery = () => {
     video: null,
     thumbnail: null,
     prompt: "",
+    shop: "",
+    deliveryTime: "",
+    dropOffBlock: "",
+    orderCap: "",
   });
 
-  const openPicker = async (selectType) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes:
-        selectType === "image"
-          ? ImagePicker.MediaTypeOptions.Images
-          : ImagePicker.MediaTypeOptions.Videos,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      if (selectType === "image") {
-        setForm({ ...form, thumbnail: result.assets[0] });
-      }
-      if (selectType === "video") {
-        setForm({ ...form, video: result.assets[0] });
-      }
-    }
-    // else {
-    //   setTimeout(() => {
-    //     setTimeout(() => {
-    //       Alert.alert("Document picked", JSON.stringify(result, null, 2));
-    //     }, 100);
-    //   });
-    // }
-  };
+  //   const openPicker = async (selectType) => {
+  //     let result = await ImagePicker.launchImageLibraryAsync({
+  //       mediaTypes:
+  //         selectType === "image"
+  //           ? ImagePicker.MediaTypeOptions.Images
+  //           : ImagePicker.MediaTypeOptions.Videos,
+  //       allowsEditing: true,
+  //       aspect: [4, 3],
+  //       quality: 1,
+  //     });
+  //     if (!result.canceled) {
+  //       if (selectType === "image") {
+  //         setForm({ ...form, thumbnail: result.assets[0] });
+  //       }
+  //       if (selectType === "video") {
+  //         setForm({ ...form, video: result.assets[0] });
+  //       }
+  //     }
+  // else {
+  //   setTimeout(() => {
+  //     setTimeout(() => {
+  //       Alert.alert("Document picked", JSON.stringify(result, null, 2));
+  //     }, 100);
+  //   });
+  // }
+  //   };
   const submit = async () => {
     console.log("Submit process started");
     if (!form.prompt || !form.title || !form.thumbnail || !form.video) {
@@ -77,16 +100,70 @@ const CreateDelivery = () => {
     <SafeAreaView className=" bg-primary h-full">
       <ScrollView className="px-4 my-6">
         <Text className="text-2xl text-white font-psemibold">
-          Upload Video PENIS
+          Start an Order
         </Text>
         <FormField
-          title="video title"
-          value={form.title}
-          placeholder="Give your video a catchy title"
-          handleChangeText={(e) => setForm({ ...form, title: e })}
-          otherStyles="mt-10"
+          title="Shop"
+          value={form.shop}
+          placeholder="Mcdonalds, Koi, Itea, KFC...."
+          handleChangeText={(e) => setForm({ ...form, shop: e })}
+          otherStyles="mt-5"
         />
-        <View className="mt-7 space-y-2">
+        {/* Date Picker */}
+        <View className={`space-y-2 mt-5`}>
+          <Text className="text-base text-gray-100 font-pmedium first-letter text-left">
+            Date and Time of Delivery
+          </Text>
+          <View className="flex flex-row gap-4">
+            {/* Date Picker */}
+            <View className="border-2 border-black-500 w-1/3 h-16 px-4 bg-black-100 rounded-2xl focus:border-secondary items-center flex-row">
+              <Text className="flex-1 text-white font-psemibold text-base">
+                {selectedDate
+                  ? selectedDate.toLocaleDateString()
+                  : "No date selected"}
+              </Text>
+            </View>
+            <View className="border-2 border-black-500 w-1/4 h-16 px-4 bg-black-100 rounded-2xl focus:border-secondary items-center flex-row">
+              <Text className="flex-1 text-white font-psemibold text-base">
+                {selectedDate
+                  ? selectedDate.toLocaleTimeString()
+                  : "No Time Selected"}
+              </Text>
+            </View>
+
+            <CustomButton
+              title="Select Time"
+              handlePress={showDatePicker}
+              containerStyles="border-2 border-black-500 w-1/3 h-16 px-4 bg-black-100 rounded-2xl focus:border-secondary items-center flex-row "
+              isLoading={uploading}
+            />
+            <DateTimePickerModal
+              date={selectedDate}
+              isVisible={datePickerVisible}
+              mode="datetime"
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+            />
+          </View>
+        </View>
+        {/* Date Picker */}
+
+        <FormField
+          title="Drop off Block"
+          value={form.dropOffBlock}
+          placeholder="Acceptable place to drop off"
+          handleChangeText={(e) => setForm({ ...form, dropOffBlock: e })}
+          otherStyles="mt-5"
+        />
+        <FormField
+          title="Order Cap"
+          value={form.orderCap}
+          placeholder="Max number of orders"
+          handleChangeText={(e) => setForm({ ...form, orderCap: e })}
+          otherStyles="mt-5"
+        />
+
+        {/* <View className="mt-7 space-y-2">
           <Text className="text-base text-gray-100 font-pmedium">
             Upload Delivery Session
           </Text>
@@ -111,8 +188,8 @@ const CreateDelivery = () => {
               </View>
             )}
           </TouchableOpacity>
-        </View>
-        <View className="mt-7 space-y-2">
+        </View> */}
+        {/* <View className="mt-7 space-y-2">
           <Text className="text-base text-gray-100 font-pmedium">
             Upload Thumbnail
           </Text>
@@ -136,14 +213,14 @@ const CreateDelivery = () => {
               </View>
             )}
           </TouchableOpacity>
-        </View>
-        <FormField
+        </View> */}
+        {/* <FormField
           title="AI Prompt"
           value={form.prompt}
           placeholder="The AI prompt for this video"
           handleChangeText={(e) => setForm({ ...form, prompt: e })}
           otherStyles="mt-7"
-        />
+        /> */}
 
         <CustomButton
           title="Submit & Publish"
