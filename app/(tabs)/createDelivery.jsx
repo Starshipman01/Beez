@@ -12,24 +12,20 @@ import { createVideo } from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Button } from "react-native-paper";
+import { DatetimeBar } from "../../components/DateTimeBar";
 
 const CreateDelivery = () => {
-  //Date Picker
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
-  const showDatePicker = () => {
-    setDatePickerVisible(true);
+  const [deliveryDate, setDeliveryDate] = useState(null);
+  const handleDateChange = (date) => {
+    setDeliveryDate(date); // Store selected date in the parent state
+    console.log("Selected Date and Time:", date);
   };
 
-  const hideDatePicker = () => {
-    setDatePickerVisible(false);
+  const [orderDate, setOrderDate] = useState(null);
+  const handleOrderChange = (date) => {
+    setOrderDate(date);
+    console.log("ORDERIGN DATE: ", orderDate);
   };
-
-  const handleConfirm = (date) => {
-    setSelectedDate(date);
-    hideDatePicker();
-  };
-  //Date Picker
 
   const { user } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
@@ -109,44 +105,18 @@ const CreateDelivery = () => {
           handleChangeText={(e) => setForm({ ...form, shop: e })}
           otherStyles="mt-5"
         />
-        {/* Date Picker */}
-        <View className={`space-y-2 mt-5`}>
-          <Text className="text-base text-gray-100 font-pmedium first-letter text-left">
-            Date and Time of Delivery
-          </Text>
-          <View className="flex flex-row gap-4">
-            {/* Date Picker */}
-            <View className="border-2 border-black-500 w-1/3 h-16 px-4 bg-black-100 rounded-2xl focus:border-secondary items-center flex-row">
-              <Text className="flex-1 text-white font-psemibold text-base">
-                {selectedDate
-                  ? selectedDate.toLocaleDateString()
-                  : "No date selected"}
-              </Text>
-            </View>
-            <View className="border-2 border-black-500 w-1/4 h-16 px-4 bg-black-100 rounded-2xl focus:border-secondary items-center flex-row">
-              <Text className="flex-1 text-white font-psemibold text-base">
-                {selectedDate
-                  ? selectedDate.toLocaleTimeString()
-                  : "No Time Selected"}
-              </Text>
-            </View>
 
-            <CustomButton
-              title="Select Time"
-              handlePress={showDatePicker}
-              containerStyles="border-2 border-black-500 w-1/3 h-16 px-4 bg-black-100 rounded-2xl focus:border-secondary items-center flex-row "
-              isLoading={uploading}
-            />
-            <DateTimePickerModal
-              date={selectedDate}
-              isVisible={datePickerVisible}
-              mode="datetime"
-              onConfirm={handleConfirm}
-              onCancel={hideDatePicker}
-            />
-          </View>
-        </View>
-        {/* Date Picker */}
+        {/* Date PICKER */}
+        <DatetimeBar
+          title="Date and Time of Delivery"
+          onDateChange={handleDateChange}
+        />
+
+        {/* Order cutoff PICKER */}
+        <DatetimeBar
+          title="Cut off time for order submission"
+          onDateChange={handleOrderChange}
+        />
 
         <FormField
           title="Drop off Block"
