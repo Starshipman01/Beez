@@ -13,8 +13,15 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Button } from "react-native-paper";
 import { DatetimeBar } from "../../components/DateTimeBar";
+import {
+  initDatabase,
+  createDelivery,
+} from "../../mock_backend/databaseService";
 
 const CreateDelivery = () => {
+  useEffect(() => {
+    initDatabase(); // Initialize the database when the component mounts
+  }, []);
   const [deliveryDate, setDeliveryDate] = useState(null);
   const handleDateChange = (date) => {
     setDeliveryDate(date); // Store selected date in the parent state
@@ -67,29 +74,29 @@ const CreateDelivery = () => {
   // }
   //   };
   const submit = async () => {
-    console.log("Submit process started");
-    if (!form.prompt || !form.title || !form.thumbnail || !form.video) {
-      return Alert.alert("Please fill in all the fields");
+    if (!form.shop || !deliveryDate || !orderDate || !form.orderCap) {
+      return Alert.alert(
+        // "Please fill in all the fields",
+        `${form.shop}, ${deliveryDate}, ${orderDate}, ${form.orderCap}`
+      );
     }
-    console.log("TEST");
-    console.log("USER1:", user);
-    setUploading(true);
-    console.log("USER2:", user);
 
     try {
-      await createVideo({
-        ...form,
+      await createDelivery({
         userId: user.$id,
-        user: user,
+        title: form.title,
+        shop: form.shop,
+        deliveryTime: deliveryDate,
+        orderCutoff: orderDate,
+        dropOffBlock: form.dropOffBlock,
+        orderCap: parseInt(form.orderCap),
       });
-      Alert.alert("Success", "Post Uploaded Successfully");
+
+      Alert.alert("Success", "Order Created Successfully");
       router.push("/home");
     } catch (error) {
       console.log("Error in Submit", error);
       Alert.alert("Error", error.message);
-    } finally {
-      setForm({ title: "", video: null, thumbnail: null, prompt: "" });
-      setUploading(false);
     }
   };
   return (

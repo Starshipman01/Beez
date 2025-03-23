@@ -24,7 +24,6 @@ export const DatetimeBar = ({ onDateChange, title }) => {
         {title}
       </Text>
       <View className="flex flex-row gap-4">
-        {/* Date Display */}
         <View className="border-2 border-black-500 w-1/3 h-16 px-4 bg-black-100 rounded-2xl items-center flex-row">
           <Text className="flex-1 text-white font-psemibold text-base">
             {selectedDate.toLocaleDateString()}
@@ -40,14 +39,12 @@ export const DatetimeBar = ({ onDateChange, title }) => {
           </Text>
         </View>
 
-        {/* Button to Open Date Picker */}
         <CustomButton
           title="Select Time"
           handlePress={showDatePicker}
           containerStyles="border-2 border-black-500 w-1/3 h-16 px-4 bg-black-100 rounded-2xl items-center flex-row"
         />
 
-        {/* Date Picker Modal */}
         <DateTimePickerModal
           date={selectedDate}
           isVisible={datePickerVisible}
