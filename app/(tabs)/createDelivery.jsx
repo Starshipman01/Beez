@@ -13,15 +13,12 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Button } from "react-native-paper";
 import { DatetimeBar } from "../../components/DateTimeBar";
-import {
-  initDatabase,
-  createDelivery,
-} from "../../mock_backend/databaseService";
+// import {
+//   initDatabase,
+//   createDelivery,
+// } from "../../mock_backend/databaseService";
 
 const CreateDelivery = () => {
-  useEffect(() => {
-    initDatabase(); // Initialize the database when the component mounts
-  }, []);
   const [deliveryDate, setDeliveryDate] = useState(null);
   const handleDateChange = (date) => {
     setDeliveryDate(date); // Store selected date in the parent state

@@ -7,8 +7,10 @@ import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { Link, router } from "expo-router";
 import { account, createUser } from "../../lib/appwrite";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const SignUp = () => {
+  const { setUser, setIsLoggedIn, isLoggedIn, user } = useGlobalContext();
   const [form, setForm] = useState({ email: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -18,6 +20,8 @@ const SignUp = () => {
     //   await account.deleteSession("current"); // Logout the current session
     //   console.log("Previous session removed.");
     // }
+
+    //TO ENSURE NO SESSION ALREADY IN PROGRESS
     let sessions = { sessions: [] };
     try {
       sessions = await account.listSessions();
@@ -28,6 +32,7 @@ const SignUp = () => {
     } catch (error) {
       console.log("Failed to list sessions:", error);
     }
+    //TO ENSURE NO SESSION ALREADY IN PROGRESS
 
     if (form.userName === "" || form.password === "" || form.email === "") {
       Alert.alert("Error", "Please fill in all the fields");
@@ -36,6 +41,8 @@ const SignUp = () => {
     try {
       const result = await createUser(form.email, form.password, form.userName);
       //set to global state....
+      setUser(result);
+
       router.replace("/home");
     } catch (error) {
       Alert.alert("Error", error.message);
