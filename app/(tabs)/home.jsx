@@ -16,9 +16,10 @@ const Home = () => {
   const { data: posts, refetch: refetchPosts } = useAppwrite(getAllPosts);
   // const { data: latestPosts, refetch: refetchLatest } = useAppwrite(getLatestPosts);
   const [refreshing, setRefreshing] = useState(false);
-  const { isLoggedIn, user } = useGlobalContext();
+  const { isLoggedIn, user, token } = useGlobalContext();
   console.log(`Signin status at Home: ${user} and ${isLoggedIn}`);
-  console.log(user);
+  console.log("USER: ", user);
+  console.log("TOKEN: ", token);
 
   const navToLanding = async () => {
     router.replace("/");
