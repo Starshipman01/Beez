@@ -9,7 +9,8 @@ import { Link, router } from "expo-router";
 import { account, getCurrentUser, signIn } from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
 const SignIn = () => {
-  const { setUser, setIsLoggedIn, isLoggedIn, user } = useGlobalContext();
+  const { setUser, setIsLoggedIn, isLoggedIn, user, token, setToken } =
+    useGlobalContext();
   const [form, setForm] = useState({ email: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,9 +32,12 @@ const SignIn = () => {
     }
     setIsSubmitting(true);
     try {
-      await signIn(form.email, form.password);
+      const userData = await signIn(form.email, form.password);
+      setUser(userData.user);
+      setToken(userData.token);
+      console.log("TOKEN IN SIGNIN: ", userData.token);
       // const result = await getCurrentUser();
-      setUser(await getCurrentUser()); //set to global state....
+      // setUser(await getCurrentUser()); //set to global state....
       console.log(`Signin status: ${user} and ${isLoggedIn}`);
       setIsLoggedIn(true); //set to global state....
       console.log(`Signin status after: ${user} and ${isLoggedIn}`);
@@ -68,14 +72,14 @@ const SignIn = () => {
       setUser(userData.user);
       setToken(userData.token);
       // const result = await getCurrentUser();
-      setUser(await getCurrentUser()); //set to global state....
-
+      // setUser(await getCurrentUser()); //set to global state....
       console.log(`Signin status: ${user} and ${isLoggedIn}`);
       setIsLoggedIn(true); //set to global state....
       console.log(`Signin status after: ${user} and ${isLoggedIn}`);
-      // Alert.alert("Success", "User signed in Successfully");
+      Alert.alert("Success", "User signed in Successfully");
 
       //set to global state....
+
       router.replace("/home");
     } catch (error) {
       Alert.alert("Error", error.message);
