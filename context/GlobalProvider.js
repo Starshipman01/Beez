@@ -18,18 +18,13 @@ const GlobalProvider = ({ children }) => {
               const res = await getCurrentUser();
               console.log("USER:", res);
               if (res) {
-                console.log("Global Provider 1")
                   setIsLoggedIn(true);
-                  console.log("Global Provider 2")
                   setUser(res);
-                  console.log("Global Provider 3")
                   await AsyncStorage.setItem("user", JSON.stringify(res)); // Store user data
               } else {
                 console.log("Global Provider 4")
                   setIsLoggedIn(false);
-                  console.log("Global Provider 5")
                   setUser(null);
-                  console.log("Global Provider 6")
                   await AsyncStorage.removeItem("user");
               }
           } catch (error) {
@@ -42,7 +37,7 @@ const GlobalProvider = ({ children }) => {
   }, []);
 
   return (
-      <GlobalContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser, isLoading }}>
+      <GlobalContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser, isLoading, token, setToken }}>
           {children}
       </GlobalContext.Provider>
   );

@@ -70,6 +70,7 @@ const SignIn = () => {
     try {
       const userData = await signIn("joshua3@gmail.com", "12341234");
       setUser(userData.user);
+      setToken(userData.token);
       // const result = await getCurrentUser();
       // setUser(await getCurrentUser()); //set to global state....
       console.log(`Signin status: ${user} and ${isLoggedIn}`);

@@ -10,7 +10,8 @@ import { account, createUser } from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
 
 const SignUp = () => {
-  const { setUser, setIsLoggedIn, isLoggedIn, user } = useGlobalContext();
+  const { setUser, setIsLoggedIn, isLoggedIn, user, setToken } =
+    useGlobalContext();
   const [form, setForm] = useState({ email: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,7 +42,8 @@ const SignUp = () => {
     try {
       const result = await createUser(form.email, form.password, form.userName);
       //set to global state....
-      setUser(result);
+      setUser(result.user);
+      setToken(result.token);
 
       router.replace("/home");
     } catch (error) {
