@@ -26,10 +26,18 @@ const Create = () => {
     }
 
     try {
+      console.log(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${expressKeys.MAPBOX_PUBLIC_TOKEN}&country=SG`
+      );
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${expressKeys.MAPBOX_PUBLIC_TOKEN}&country=SG`
       );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
       const data = await response.json();
+      console.log("DATA GOT GET:? ", data);
       setSuggestions(data.features || []);
     } catch (error) {
       console.error("Error fetching address suggestions:", error);
