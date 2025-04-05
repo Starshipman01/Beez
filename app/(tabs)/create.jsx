@@ -5,7 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapboxGL from "@rnmapbox/maps";
 import { expressKeys } from "../../lib/expressKeys";
@@ -18,6 +18,18 @@ const Create = () => {
 
   MapboxGL.setAccessToken(expressKeys.MAPBOX_PUBLIC_TOKEN);
 
+  useEffect(() => {
+    if (searchQuery.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    const delayDebounce = setTimeout(() => {
+      fetchSuggestions(searchQuery);
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(delayDebounce); // clear on cleanup
+  }, [searchQuery]);
   // 🔹 Fetch Address Suggestions from Mapbox API
   const fetchSuggestions = async (query) => {
     if (!query) {
@@ -26,18 +38,16 @@ const Create = () => {
     }
 
     try {
-      console.log(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${expressKeys.MAPBOX_PUBLIC_TOKEN}&country=SG`
-      );
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${expressKeys.MAPBOX_PUBLIC_TOKEN}&country=SG`
+        `${expressKeys.baseURL}/geocode?query=${encodeURIComponent(query)}`
       );
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("DATA GOT GET:? ", data);
+      console.log("FETCHED:", data.features);
+      console.log();
       setSuggestions(data.features || []);
     } catch (error) {
       console.error("Error fetching address suggestions:", error);
@@ -46,6 +56,8 @@ const Create = () => {
 
   // 🔹 Handle Address Selection
   const handleSelectAddress = (location) => {
+    console.log("HANDLESELECTADDRESS: ", location);
+    console.log("handled address: ", location.full_address);
     const [lng, lat] = location.center;
     setCoordinates([lng, lat]);
     setSelectedAddress(location.place_name);
@@ -67,7 +79,7 @@ const Create = () => {
 
         {/* 🔹 Search Bar */}
         <View className="mt-4 mb-2">
-          <TextInput
+          {/* <TextInput
             className="bg-white p-3 rounded-lg text-black"
             placeholder="Search for an address..."
             value={searchQuery}
@@ -75,9 +87,14 @@ const Create = () => {
               setSearchQuery(text);
               fetchSuggestions(text);
             }}
+          /> */}
+          <TextInput
+            className="bg-white p-3 rounded-lg text-black"
+            placeholder="Search for an address..."
+            value={searchQuery}
+            onChangeText={(text) => setSearchQuery(text)}
           />
         </View>
-
         {/* 🔹 Address Suggestions */}
         {suggestions.length > 0 && (
           <View className="bg-white p-2 rounded-lg">
@@ -87,7 +104,7 @@ const Create = () => {
                 onPress={() => handleSelectAddress(item)}
               >
                 <Text className="text-black p-2 border-b">
-                  {item.place_name}
+                  {item.properties.full_address}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -102,8 +119,22 @@ const Create = () => {
               id="unique-marker"
               coordinate={coordinates}
             >
-              <View className="bg-blue-500 p-2 rounded-full">
-                <Text className="text-white font-bold">📍</Text>
+              <View
+                style={{
+                  backgroundColor: "#3B82F6", // Tailwind blue-500
+                  padding: 8,
+                  borderRadius: 9999,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                  }}
+                >
+                  📍
+                </Text>
               </View>
             </MapboxGL.PointAnnotation>
           </MapboxGL.MapView>

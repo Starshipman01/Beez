@@ -1,4 +1,4 @@
-package com.beez
+package com.beez.beez
 
 import android.app.Application
 import android.content.res.Configuration
