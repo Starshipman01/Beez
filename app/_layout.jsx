@@ -9,6 +9,7 @@ import { useFonts } from "expo-font";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import GlobalProvider from "../context/GlobalProvider";
+import { OrderProvider } from "../context/OrderContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -40,16 +41,21 @@ const RootLayout = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <GlobalProvider>
-          <Stack>
-            <Stack.Screen name="(delivery)" options={{ headerShown: false }} />
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="search/[query]"
-              options={{ headerShown: false }}
-            />
-          </Stack>
+          <OrderProvider>
+            <Stack>
+              <Stack.Screen
+                name="(delivery)"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="search/[query]"
+                options={{ headerShown: false }}
+              />
+            </Stack>
+          </OrderProvider>
         </GlobalProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

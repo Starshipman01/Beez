@@ -1,80 +1,82 @@
-import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
-import React, { useState } from "react";
+import { View, Text, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
 import FormField from "../../components/FormField";
-import { ResizeMode, Video } from "expo-av";
-import { icons } from "../../constants";
 import CustomButton from "../../components/CustomButton";
-import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import { createVideo } from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { Button } from "react-native-paper";
 import { DatetimeBar } from "../../components/DateTimeBar";
-// import {
-//   initDatabase,
-//   createDelivery,
-// } from "../../mock_backend/databaseService";
+import { useLocalSearchParams } from "expo-router";
+
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
+import { useOrder } from "../../context/OrderContext";
 
 const CreateDelivery = () => {
-  const [deliveryDate, setDeliveryDate] = useState(null);
-  const handleDateChange = (date) => {
-    setDeliveryDate(date); // Store selected date in the parent state
-    console.log("Selected Date and Time:", date);
-  };
-
-  const [orderDate, setOrderDate] = useState(null);
-  const handleOrderChange = (date) => {
-    setOrderDate(date);
-    console.log("ORDERIGN DATE: ", orderDate);
-  };
-
   const { user } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
+
+  const { orderData, setOrderData } = useOrder();
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     return () => {
+  //       // Called when navigating away
+  //       console.log("Saving form to context before leaving CreateDelivery");
+  //       console.log("FORM: ", form);
+  //       setOrderData(form);
+  //       console.log("ORDERDATA: ", orderData);
+  //     };
+  //   }, [form])
+  // );
+
   const [form, setForm] = useState({
-    title: "",
-    video: null,
-    thumbnail: null,
-    prompt: "",
     shop: "",
-    deliveryTime: "",
-    dropOffBlock: "",
     orderCap: "",
+    deliveryDate: null,
+    orderCutOffDate: null,
+    dropOffBlock: "",
+    dropOffAddress: "",
+    dropOffCoordinates: {
+      latitude: 0,
+      longitude: 0,
+    },
   });
 
-  //   const openPicker = async (selectType) => {
-  //     let result = await ImagePicker.launchImageLibraryAsync({
-  //       mediaTypes:
-  //         selectType === "image"
-  //           ? ImagePicker.MediaTypeOptions.Images
-  //           : ImagePicker.MediaTypeOptions.Videos,
-  //       allowsEditing: true,
-  //       aspect: [4, 3],
-  //       quality: 1,
-  //     });
-  //     if (!result.canceled) {
-  //       if (selectType === "image") {
-  //         setForm({ ...form, thumbnail: result.assets[0] });
-  //       }
-  //       if (selectType === "video") {
-  //         setForm({ ...form, video: result.assets[0] });
-  //       }
-  //     }
-  // else {
-  //   setTimeout(() => {
-  //     setTimeout(() => {
-  //       Alert.alert("Document picked", JSON.stringify(result, null, 2));
-  //     }, 100);
-  //   });
-  // }
-  //   };
+  useEffect(() => {
+    setForm(orderData);
+  }, [orderData]);
+
+  const handleDropOffAddress = () => {
+    console.log("PASSING FROM CREATEDELIVERY to CREATE");
+    console.log("Going to /create with", form);
+    setOrderData(form);
+    setTimeout(() => {
+      router.push({
+        pathname: "/create",
+      });
+    }, 500); // 50ms is enough, just gives React a breath
+  };
+
+  const handleDeliveryDate = (date) => {
+    setForm({ ...form, deliveryDate: date });
+  };
+
+  const handleOrderChange = (date) => {
+    setForm({ ...form, orderCutOffDate: date });
+  };
+
   const submit = async () => {
-    if (!form.shop || !deliveryDate || !orderDate || !form.orderCap) {
+    if (
+      !form.shop ||
+      !form.deliveryDate ||
+      !form.orderCutOffDate ||
+      !form.orderCap
+    ) {
       return Alert.alert(
-        // "Please fill in all the fields",
-        `${form.shop}, ${deliveryDate}, ${orderDate}, ${form.orderCap}`
+        "Missing fields",
+        `Shop: ${form.shop}, Delivery: ${form.deliveryDate}, Order Cutoff: ${form.orderCutOffDate}, Cap: ${form.orderCap}`
       );
     }
 
@@ -83,8 +85,8 @@ const CreateDelivery = () => {
         userId: user.$id,
         title: form.title,
         shop: form.shop,
-        deliveryTime: deliveryDate,
-        orderCutoff: orderDate,
+        deliveryTime: form.deliveryDate,
+        orderCutoff: form.orderCutOffDate,
         dropOffBlock: form.dropOffBlock,
         orderCap: parseInt(form.orderCap),
       });
@@ -96,39 +98,53 @@ const CreateDelivery = () => {
       Alert.alert("Error", error.message);
     }
   };
+
   return (
-    <SafeAreaView className=" bg-primary h-full">
+    <SafeAreaView className="bg-primary h-full">
       <ScrollView className="px-4 my-6">
         <Text className="text-2xl text-white font-psemibold">
           Start an Order
         </Text>
+
         <FormField
           title="Shop"
           value={form.shop}
-          placeholder="Mcdonalds, Koi, Itea, KFC...."
+          placeholder="Mcdonalds, Koi, Itea, KFC..."
           handleChangeText={(e) => setForm({ ...form, shop: e })}
           otherStyles="mt-5"
         />
 
-        {/* Date PICKER */}
         <DatetimeBar
           title="Date and Time of Delivery"
-          onDateChange={handleDateChange}
+          onDateChange={handleDeliveryDate}
+          value={form.deliveryDate}
         />
 
-        {/* Order cutoff PICKER */}
         <DatetimeBar
           title="Cut off time for order submission"
           onDateChange={handleOrderChange}
+          value={form.orderCutOffDate}
         />
 
-        <FormField
-          title="Drop off Block"
-          value={form.dropOffBlock}
-          placeholder="Acceptable place to drop off"
-          handleChangeText={(e) => setForm({ ...form, dropOffBlock: e })}
-          otherStyles="mt-5"
-        />
+        <View className="space-y-2 mt-5">
+          <Text className="text-base text-gray-100 font-pmedium text-left">
+            Drop Off Address
+          </Text>
+          <View className="flex flex-row gap-4">
+            <View className="flex-1 border-2 border-black-500 h-16 px-4 bg-black-100 rounded-2xl items-center justify-center">
+              <Text className="text-white font-psemibold text-base">
+                {form.dropOffAddress}
+              </Text>
+            </View>
+
+            <CustomButton
+              title="Drop Off"
+              handlePress={handleDropOffAddress}
+              containerStyles="border-2 border-black-500 w-1/3 h-16 px-4 bg-black-100 rounded-2xl items-center flex-row"
+            />
+          </View>
+        </View>
+
         <FormField
           title="Order Cap"
           value={form.orderCap}
@@ -136,65 +152,6 @@ const CreateDelivery = () => {
           handleChangeText={(e) => setForm({ ...form, orderCap: e })}
           otherStyles="mt-5"
         />
-
-        {/* <View className="mt-7 space-y-2">
-          <Text className="text-base text-gray-100 font-pmedium">
-            Upload Delivery Session
-          </Text>
-          <TouchableOpacity onPress={() => openPicker("video")}>
-            {form.video ? (
-              <Video
-                source={{ uri: form.video.uri }}
-                className="w-full h-64 rounded-2xl"
-                // useNativeControls
-                resizeMode={ResizeMode.COVER}
-                // isLooping
-              />
-            ) : (
-              <View className="w-full h-40 px-4 bg-black-100 rounded-2xl justify-center items-center">
-                <View className="w-14 h-14 border border-dash border-secondary-100 justify-center items-center">
-                  <Image
-                    source={icons.upload}
-                    resizeMode="contain"
-                    className="w-1/2 h-1/2"
-                  />
-                </View>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View> */}
-        {/* <View className="mt-7 space-y-2">
-          <Text className="text-base text-gray-100 font-pmedium">
-            Upload Thumbnail
-          </Text>
-          <TouchableOpacity onPress={() => openPicker("image")}>
-            {form.thumbnail ? (
-              <Image
-                source={{ uri: form.thumbnail.uri }}
-                className="w-full h-64 rounded-2xl"
-                resizeMode="cover"
-              />
-            ) : (
-              <View className="w-full h-16 px-4 bg-black-100 rounded-2xl justify-center items-center border-2 border-black-200 flex-row space-x-2">
-                <Image
-                  source={icons.upload}
-                  resizeMode="contain"
-                  className="w-5 h-5"
-                />
-                <Text className="text-sm text-gray-100 font-pmedium">
-                  Choose a file
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View> */}
-        {/* <FormField
-          title="AI Prompt"
-          value={form.prompt}
-          placeholder="The AI prompt for this video"
-          handleChangeText={(e) => setForm({ ...form, prompt: e })}
-          otherStyles="mt-7"
-        /> */}
 
         <CustomButton
           title="Submit & Publish"
@@ -206,4 +163,5 @@ const CreateDelivery = () => {
     </SafeAreaView>
   );
 };
+
 export default CreateDelivery;

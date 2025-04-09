@@ -9,27 +9,53 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapboxGL from "@rnmapbox/maps";
 import { expressKeys } from "../../lib/expressKeys";
+import { Keyboard } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
+import { useOrder } from "../../context/OrderContext";
 
 const Create = () => {
   const [coordinates, setCoordinates] = useState([103.8198, 1.3521]); // Default to Singapore
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState("");
+  const [zoomLevel, setZoomLevel] = useState(14); // Default zoom level
+  const [isAddressSelected, setIsAddressSelected] = useState(false); // Flag to track address selection
+  const { orderData, setOrderData } = useOrder();
 
   MapboxGL.setAccessToken(expressKeys.MAPBOX_PUBLIC_TOKEN);
 
+  const [form, setForm] = useState({
+    shop: "",
+    orderCap: "",
+    deliveryDate: null,
+    orderCutOffDate: null,
+    dropOffBlock: "",
+    dropOffAddress: "",
+    dropOffCoordinates: {
+      latitude: 0,
+      longitude: 0,
+    },
+  });
+
   useEffect(() => {
-    if (searchQuery.length < 3) {
+    setForm(orderData);
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.length < 3 || isAddressSelected) {
       setSuggestions([]);
       return;
     }
-
     const delayDebounce = setTimeout(() => {
       fetchSuggestions(searchQuery);
     }, 500); // 500ms debounce
 
     return () => clearTimeout(delayDebounce); // clear on cleanup
-  }, [searchQuery]);
+  }, [searchQuery, isAddressSelected]);
+
   // 🔹 Fetch Address Suggestions from Mapbox API
   const fetchSuggestions = async (query) => {
     if (!query) {
@@ -46,8 +72,6 @@ const Create = () => {
       }
 
       const data = await response.json();
-      console.log("FETCHED:", data.features);
-      console.log();
       setSuggestions(data.features || []);
     } catch (error) {
       console.error("Error fetching address suggestions:", error);
@@ -56,17 +80,38 @@ const Create = () => {
 
   // 🔹 Handle Address Selection
   const handleSelectAddress = (location) => {
-    console.log("HANDLESELECTADDRESS: ", location);
-    console.log("handled address: ", location.full_address);
-    const [lng, lat] = location.center;
+    const [lng, lat] = [
+      location.properties.coordinates.longitude,
+      location.properties.coordinates.latitude,
+    ];
+    const fullAddress = location.properties.full_address;
+
     setCoordinates([lng, lat]);
-    setSelectedAddress(location.place_name);
+    setSelectedAddress(fullAddress);
+    setForm((prevForm) => ({
+      ...prevForm,
+      dropOffCoordinates: {
+        longitude: lng,
+        latitude: lat,
+      },
+      dropOffAddress: fullAddress,
+    }));
+    setSearchQuery(fullAddress);
     setSuggestions([]);
-    setSearchQuery(location.place_name);
+    setIsAddressSelected(true);
+    Keyboard.dismiss();
+    setZoomLevel(16);
   };
 
   // 🔹 Confirm Location Selection
   const confirmLocation = () => {
+    console.log("Button press: ", form);
+    setOrderData(form);
+    setTimeout(() => {
+      router.push({
+        pathname: "/createDelivery",
+      });
+    }, 50); // 50ms is enough, just gives React a breath
     alert(`Location confirmed: ${selectedAddress || "Custom location"}`);
   };
 
@@ -79,20 +124,14 @@ const Create = () => {
 
         {/* 🔹 Search Bar */}
         <View className="mt-4 mb-2">
-          {/* <TextInput
+          <TextInput
             className="bg-white p-3 rounded-lg text-black"
             placeholder="Search for an address..."
             value={searchQuery}
             onChangeText={(text) => {
               setSearchQuery(text);
-              fetchSuggestions(text);
+              setIsAddressSelected(false); // Reset flag when the user starts typing
             }}
-          /> */}
-          <TextInput
-            className="bg-white p-3 rounded-lg text-black"
-            placeholder="Search for an address..."
-            value={searchQuery}
-            onChangeText={(text) => setSearchQuery(text)}
           />
         </View>
         {/* 🔹 Address Suggestions */}
@@ -112,16 +151,19 @@ const Create = () => {
         )}
 
         {/* 🔹 Mapbox Map */}
-        <View className="h-[400px] w-full my-4 rounded-lg overflow-hidden">
-          <MapboxGL.MapView style={{ flex: 1 }}>
-            <MapboxGL.Camera zoomLevel={12} centerCoordinate={coordinates} />
+        <View className="my-4 rounded-lg overflow-hidden">
+          <MapboxGL.MapView style={{ height: 400, width: "100%" }}>
+            <MapboxGL.Camera
+              zoomLevel={zoomLevel}
+              centerCoordinate={coordinates}
+            />
             <MapboxGL.PointAnnotation
               id="unique-marker"
               coordinate={coordinates}
             >
               <View
                 style={{
-                  backgroundColor: "#3B82F6", // Tailwind blue-500
+                  backgroundColor: "#3B82F6",
                   padding: 8,
                   borderRadius: 9999,
                 }}
@@ -146,7 +188,7 @@ const Create = () => {
           className="bg-blue-500 p-4 rounded-lg mt-4"
         >
           <Text className="text-white text-center font-bold">
-            Confirm Location
+            Confirm Location PASSEDSHOP: {form.shop}
           </Text>
         </TouchableOpacity>
       </ScrollView>
