@@ -12,9 +12,10 @@ import { useLocalSearchParams } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
 import { useOrder } from "../../context/OrderContext";
+import { createNewDelivery } from "../../lib/appwrite";
 
 const CreateDelivery = () => {
-  const { user } = useGlobalContext();
+  const { user, token } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
 
   const { orderData, setOrderData } = useOrder();
@@ -36,17 +37,30 @@ const CreateDelivery = () => {
     orderCap: "",
     deliveryDate: null,
     orderCutOffDate: null,
-    dropOffBlock: "",
     dropOffAddress: "",
     dropOffCoordinates: {
       latitude: 0,
       longitude: 0,
     },
+    dropOffRange: 0,
   });
 
-  useEffect(() => {
-    setForm(orderData);
-  }, [orderData]);
+  useFocusEffect(
+    useCallback(() => {
+      setForm({
+        shop: orderData.shop,
+        orderCap: orderData.orderCap,
+        deliveryDate: orderData.deliveryDate,
+        orderCutOffDate: orderData.orderCutOffDate,
+        dropOffAddress: orderData.dropOffAddress,
+        dropOffCoordinates: {
+          latitude: orderData.dropOffCoordinates.latitude,
+          longitude: orderData.dropOffCoordinates.longitude,
+        },
+        dropOffRange: orderData.dropOffRange,
+      });
+    }, [orderData])
+  );
 
   const handleDropOffAddress = () => {
     console.log("PASSING FROM CREATEDELIVERY to CREATE");
@@ -54,7 +68,7 @@ const CreateDelivery = () => {
     setOrderData(form);
     setTimeout(() => {
       router.push({
-        pathname: "/create",
+        pathname: "/mapSelect",
       });
     }, 500); // 50ms is enough, just gives React a breath
   };
@@ -68,6 +82,7 @@ const CreateDelivery = () => {
   };
 
   const submit = async () => {
+    console.log("FINAL FORM: ", form);
     if (
       !form.shop ||
       !form.deliveryDate ||
@@ -79,17 +94,26 @@ const CreateDelivery = () => {
         `Shop: ${form.shop}, Delivery: ${form.deliveryDate}, Order Cutoff: ${form.orderCutOffDate}, Cap: ${form.orderCap}`
       );
     }
+    if (new Date(form.orderCutOffDate) >= new Date(form.deliveryDate)) {
+      return Alert.alert(
+        "Cut-off date must be earlier than the delivery date."
+      );
+    }
 
     try {
-      await createDelivery({
+      const packet = {
         userId: user.$id,
-        title: form.title,
         shop: form.shop,
-        deliveryTime: form.deliveryDate,
-        orderCutoff: form.orderCutOffDate,
-        dropOffBlock: form.dropOffBlock,
-        orderCap: parseInt(form.orderCap),
-      });
+        orderCap: form.orderCap,
+        deliveryDate: form.deliveryDate,
+        orderCutOffDate: form.orderCutOffDate,
+        dropOffAddress: form.dropOffAddress,
+        dropOffCoordinates: form.dropOffCoordinates,
+        dropOffRange: form.dropOffRange,
+        token: token,
+      };
+      console.log("FINAL SUBMISSIONS: ", packet);
+      await createNewDelivery(packet);
 
       Alert.alert("Success", "Order Created Successfully");
       router.push("/home");
@@ -149,10 +173,13 @@ const CreateDelivery = () => {
           title="Order Cap"
           value={form.orderCap}
           placeholder="Max number of orders"
-          handleChangeText={(e) => setForm({ ...form, orderCap: e })}
+          keyboardType="numeric"
+          handleChangeText={(e) => {
+            const numericValue = e.replace(/[^0-9]/g, "");
+            setForm({ ...form, orderCap: numericValue });
+          }}
           otherStyles="mt-5"
         />
-
         <CustomButton
           title="Submit & Publish"
           handlePress={submit}

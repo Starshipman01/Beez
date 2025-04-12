@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import CustomButton from "./CustomButton"; // Ensure this is correctly imported
+import CustomButton from "./CustomButton";
 
-export const DatetimeBar = ({ onDateChange, title }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+export const DatetimeBar = ({ onDateChange, title, value }) => {
+  const [selectedDate, setSelectedDate] = useState(value ?? null);
   const [datePickerVisible, setDatePickerVisible] = useState(false);
+
+  useEffect(() => {
+    // Sync with external value when it changes
+    setSelectedDate(value ?? null);
+  }, [value]);
 
   const showDatePicker = () => setDatePickerVisible(true);
   const hideDatePicker = () => setDatePickerVisible(false);
@@ -13,7 +18,7 @@ export const DatetimeBar = ({ onDateChange, title }) => {
   const handleConfirm = (date) => {
     setSelectedDate(date);
     if (onDateChange) {
-      onDateChange(date); // Send the selected date to the parent component
+      onDateChange(date);
     }
     hideDatePicker();
   };
@@ -23,26 +28,29 @@ export const DatetimeBar = ({ onDateChange, title }) => {
       <Text className="text-base text-gray-100 font-pmedium first-letter text-left">
         {title}
       </Text>
+
       <View className="flex flex-row gap-4 justify-between">
-        {/* Date Text Box */}
+        {/* Date Box */}
         <View className="flex-1 border-2 border-black-500 h-16 px-4 bg-black-100 rounded-2xl items-center justify-center">
           <Text className="text-white font-psemibold text-base">
-            {selectedDate.toLocaleDateString()}
+            {selectedDate ? selectedDate.toLocaleDateString() : ""}
           </Text>
         </View>
 
-        {/* Time Text Box */}
+        {/* Time Box */}
         <View className="flex-1 border-2 border-black-500 h-16 px-4 bg-black-100 rounded-2xl items-center justify-center">
           <Text className="text-white font-psemibold text-base">
-            {selectedDate.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })}
+            {selectedDate
+              ? selectedDate.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+              : ""}
           </Text>
         </View>
 
-        {/* Custom Button for Selecting Time */}
+        {/* Select Time Button */}
         <CustomButton
           title="Select Time"
           handlePress={showDatePicker}
@@ -50,9 +58,9 @@ export const DatetimeBar = ({ onDateChange, title }) => {
         />
       </View>
 
-      {/* DateTime Picker Modal */}
+      {/* DateTime Picker */}
       <DateTimePickerModal
-        date={selectedDate}
+        date={selectedDate ?? new Date()}
         isVisible={datePickerVisible}
         mode="datetime"
         onConfirm={handleConfirm}

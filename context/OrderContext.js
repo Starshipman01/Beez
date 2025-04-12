@@ -8,7 +8,6 @@ export const OrderProvider = ({ children }) => {
     orderCap: "",
     deliveryDate: null,
     orderCutOffDate: null,
-    dropOffBlock: "",
     dropOffAddress: "",
     dropOffCoordinates: {
       latitude: 0,
