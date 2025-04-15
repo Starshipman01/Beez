@@ -9,6 +9,7 @@ const DeliveryLayout = () => {
       <Stack>
         <Stack.Screen name="deliveryLanding" options={{ headerShown: false }} />
         <Stack.Screen name="mapSelect" options={{ headerShown: false }} />
+        <Stack.Screen name="mapRequest" options={{ headerShown: false }} />
       </Stack>
       <StatusBar backgroundColor="#161622" style="light" />
     </>

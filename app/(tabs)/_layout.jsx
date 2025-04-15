@@ -61,15 +61,15 @@ const TabsLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="bookmark"
+          name="submitRequest"
           options={{
-            title: "Bookmark",
+            title: "SubmitRequest",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.bookmark}
                 color={color}
-                name="Bookmark "
+                name="Submit Request "
                 focused={focused}
               />
             ),

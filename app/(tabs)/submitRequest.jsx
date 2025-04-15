@@ -1,5 +1,5 @@
 import { View, Text, Alert } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
 import FormField from "../../components/FormField";
@@ -11,29 +11,25 @@ import { useLocalSearchParams } from "expo-router";
 
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
-import { useOrder } from "../../context/OrderContext";
+import { useRequest } from "../../context/RequestContext";
 import { createNewDelivery } from "../../lib/appwrite";
-import { useRef } from "react";
 
-const CreateDelivery = () => {
+const SubmitRequest = () => {
   const { user, token } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
 
-  const { orderData, setOrderData, resetOrderData } = useOrder();
-
+  const { requestData, setRequestData } = useRequest();
   const defaultForm = {
-    shop: "",
-    orderCap: "",
-    deliveryDate: null,
-    orderCutOffDate: null,
     dropOffAddress: "",
-    dropOffCoordinates: { latitude: 0, longitude: 0 },
+    dropOffCoordinates: {
+      latitude: 0,
+      longitude: 0,
+    },
     dropOffRange: 0,
   };
 
   const [form, setForm] = useState(defaultForm);
   const formRef = useRef(form);
-
   useEffect(() => {
     formRef.current = form;
   }, [form]);
@@ -41,82 +37,50 @@ const CreateDelivery = () => {
   useFocusEffect(
     useCallback(() => {
       setForm({
-        shop: orderData.shop,
-        orderCap: orderData.orderCap,
-        deliveryDate: orderData.deliveryDate,
-        orderCutOffDate: orderData.orderCutOffDate,
-        dropOffAddress: orderData.dropOffAddress,
+        dropOffAddress: requestData.dropOffAddress,
         dropOffCoordinates: {
-          latitude: orderData.dropOffCoordinates.latitude,
-          longitude: orderData.dropOffCoordinates.longitude,
+          latitude: requestData.dropOffCoordinates.latitude,
+          longitude: requestData.dropOffCoordinates.longitude,
         },
-        dropOffRange: orderData.dropOffRange,
+        dropOffRange: requestData.dropOffRange,
       });
       return () => {
-        // Called when navigating away
-        console.log("Saving form to context before leaving CreateDelivery");
+        console.log("Saving form to context before leaving submitRequest");
         console.log("FORM: ", formRef.current);
-        setOrderData(formRef.current);
+        setRequestData(formRef.current);
       };
     }, [])
   );
 
   const handleDropOffAddress = () => {
-    console.log("PASSING FROM CREATEDELIVERY to CREATE");
-    console.log("Going to /create with", form);
-    setOrderData(form);
+    console.log("PASSING FROM submitrequest to maprequest");
+    console.log("Going to /maprequest with", form);
+    setRequestData(form);
     setTimeout(() => {
       router.push({
-        pathname: "/mapSelect",
+        pathname: "/mapRequest",
       });
     }, 500); // 50ms is enough, just gives React a breath
   };
 
-  const handleDeliveryDate = (date) => {
-    setForm({ ...form, deliveryDate: date });
-  };
-
-  const handleOrderChange = (date) => {
-    setForm({ ...form, orderCutOffDate: date });
-  };
-
   const submit = async () => {
     console.log("FINAL FORM: ", form);
-    if (
-      !form.shop ||
-      !form.deliveryDate ||
-      !form.orderCutOffDate ||
-      !form.orderCap
-    ) {
-      return Alert.alert(
-        "Missing fields",
-        `Shop: ${form.shop}, Delivery: ${form.deliveryDate}, Order Cutoff: ${form.orderCutOffDate}, Cap: ${form.orderCap}`
-      );
-    }
-    if (new Date(form.orderCutOffDate) >= new Date(form.deliveryDate)) {
-      return Alert.alert(
-        "Cut-off date must be earlier than the delivery date."
-      );
+    if (!form.dropOffAddress) {
+      return Alert.alert("Missing fields", `Delivery Addresss is Blank`);
     }
 
     try {
       const packet = {
         userId: user.$id,
-        shop: form.shop,
-        orderCap: form.orderCap,
-        deliveryDate: form.deliveryDate,
-        orderCutOffDate: form.orderCutOffDate,
         dropOffAddress: form.dropOffAddress,
         dropOffCoordinates: form.dropOffCoordinates,
         dropOffRange: form.dropOffRange,
         token: token,
       };
       console.log("FINAL SUBMISSIONS: ", packet);
-      await createNewDelivery(packet);
+      //await createNewDelivery(packet); //TESTING HERE
 
       Alert.alert("Success", "Order Created Successfully");
-      resetOrderData();
-      setForm(defaultForm);
       router.push("/home");
     } catch (error) {
       console.log("Error in Submit", error);
@@ -128,28 +92,8 @@ const CreateDelivery = () => {
     <SafeAreaView className="bg-primary h-full">
       <ScrollView className="px-4 my-6">
         <Text className="text-2xl text-white font-psemibold">
-          Start an Order
+          Look for Deliveries
         </Text>
-
-        <FormField
-          title="Shop"
-          value={form.shop}
-          placeholder="Mcdonalds, Koi, Itea, KFC..."
-          handleChangeText={(e) => setForm({ ...form, shop: e })}
-          otherStyles="mt-5"
-        />
-
-        <DatetimeBar
-          title="Date and Time of Delivery"
-          onDateChange={handleDeliveryDate}
-          value={form.deliveryDate}
-        />
-
-        <DatetimeBar
-          title="Cut off time for order submission"
-          onDateChange={handleOrderChange}
-          value={form.orderCutOffDate}
-        />
 
         <View className="space-y-2 mt-5">
           <Text className="text-base text-gray-100 font-pmedium text-left">
@@ -170,17 +114,6 @@ const CreateDelivery = () => {
           </View>
         </View>
 
-        <FormField
-          title="Order Cap"
-          value={form.orderCap}
-          placeholder="Max number of orders"
-          keyboardType="numeric"
-          handleChangeText={(e) => {
-            const numericValue = e.replace(/[^0-9]/g, "");
-            setForm({ ...form, orderCap: numericValue });
-          }}
-          otherStyles="mt-5"
-        />
         <CustomButton
           title="Submit & Publish"
           handlePress={submit}
@@ -192,4 +125,4 @@ const CreateDelivery = () => {
   );
 };
 
-export default CreateDelivery;
+export default SubmitRequest;
